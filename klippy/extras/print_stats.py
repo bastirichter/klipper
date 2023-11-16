@@ -71,17 +71,20 @@ class PrintStats:
                                    minval=0)
         current_layer = gcmd.get_int("CURRENT_LAYER", self.info_current_layer, \
                                      minval=0)
+        total_filament = gcmd.get_float("TOTAL_FILAMENT", self.info_total_filament, \
+                                     minval=0.0)
         if total_layer == 0:
             self.info_total_layer = None
             self.info_current_layer = None
         elif total_layer != self.info_total_layer:
             self.info_total_layer = total_layer
             self.info_current_layer = 0
-
         if self.info_total_layer is not None and \
                 current_layer is not None and \
                 current_layer != self.info_current_layer:
             self.info_current_layer = min(current_layer, self.info_total_layer)
+        if total_filament != 0:
+            self.info_total_filament = total_filament
     def reset(self):
         self.filename = self.error_message = ""
         self.state = "standby"
@@ -91,6 +94,7 @@ class PrintStats:
         self.init_duration = 0.
         self.info_total_layer = None
         self.info_current_layer = None
+        self.info_total_filament = None
     def get_status(self, eventtime):
         time_paused = self.prev_pause_duration
         if self.print_start_time is not None:
@@ -113,7 +117,8 @@ class PrintStats:
             'state': self.state,
             'message': self.error_message,
             'info': {'total_layer': self.info_total_layer,
-                     'current_layer': self.info_current_layer}
+                     'current_layer': self.info_current_layer,
+                     'total_filament': self.info_total_filament}
         }
 
 def load_config(config):
